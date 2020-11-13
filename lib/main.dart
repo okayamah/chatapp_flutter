@@ -3,37 +3,32 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(ChatApp());
 }
 
-class MyApp extends StatelessWidget {
+class ChatApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    // ユーザー情報を渡す
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: MyAuthPage(),
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'ChatApp',
+        theme: ThemeData(
+          // テーマカラー
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        // ログイン画面を表示
+        home: LoginPage(),
+      );
   }
 }
-class MyAuthPage extends StatefulWidget {
+class LoginPage extends StatefulWidget {
   @override
-  _MyAuthPageState createState() => _MyAuthPageState();
+  _LoginPageState createState() => _LoginPageState();
 }
-class _MyAuthPageState extends State<MyAuthPage> {
+class _LoginPageState extends State<LoginPage> {
   // 登録・ログインに関する情報を表示
   String infoText = "";
   // 入力されたメールアドレス（ログイン）
@@ -49,8 +44,9 @@ class _MyAuthPageState extends State<MyAuthPage> {
       ),
       body: Center(
         child: Container(
-          padding: EdgeInsets.all(32),
+          padding: EdgeInsets.all(48),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               TextFormField(
                 // テキスト入力のラベルを設定
@@ -71,63 +67,80 @@ class _MyAuthPageState extends State<MyAuthPage> {
                   });
                 },
               ),
-              RaisedButton(
-                onPressed: () async {
-                  try {
-                    // メール/パスワードでログイン
-                    final FirebaseAuth auth = FirebaseAuth.instance;
-                    final UserCredential result =
-                        await auth.signInWithEmailAndPassword(
-                      email: loginUserEmail,
-                      password: loginUserPassword,
-                    );
-                    // ログインに成功した場合
-                    final User user = result.user;
-                    setState(() {
-                      infoText = "ログインOK：${user.email}";
-                    });
-                    // "push"で新規画面に遷移
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) {
-                        // 遷移先の画面としてリスト追加画面を指定
-                        return ListPage();
-                      }),
-                    );
-                  } catch (e) {
-                    // ログインに失敗した場合
-                    setState(() {
-                      infoText = "ログインNG：${e.message}";
-                    });
-                  }
-                },
-                child: Text("ログイン"),
+              Container(
+                padding: EdgeInsets.all(8),
+                // メッセージ表示
+                child: Text(infoText),
               ),
-              RaisedButton(
-                onPressed: () async {
-                  try {
-                    // メール/パスワードでユーザー登録
-                    final FirebaseAuth auth = FirebaseAuth.instance;
-                    final UserCredential result =
-                        await auth.createUserWithEmailAndPassword(
-                      email: loginUserEmail,
-                      password: loginUserPassword,
-                    );
-                    // 登録したユーザー情報
-                    final User user = result.user;
-                    setState(() {
-                      infoText = "登録OK：${user.email}";
-                    });
-                  } catch (e) {
-                    // 登録に失敗した場合
-                    setState(() {
-                      infoText = "登録NG：${e.message}";
-                    });
-                  }
-                },
-                child: Text("ユーザー登録"),
+              Container(
+                padding: EdgeInsets.all(8),
+                width: double.infinity,
+                // ログイン登録ボタン
+                child: RaisedButton.icon(
+                  label: Text("ログイン"),
+                  icon: Icon(Icons.login),
+                  color: Colors.blue,
+                  textColor: Colors.white,
+                  onPressed: () async {
+                    try {
+                      // メール/パスワードでログイン
+                      final FirebaseAuth auth = FirebaseAuth.instance;
+                      final UserCredential result =
+                          await auth.signInWithEmailAndPassword(
+                        email: loginUserEmail,
+                        password: loginUserPassword,
+                      );
+                      // ログインに成功した場合
+                      final User user = result.user;
+                      setState(() {
+                        infoText = "ログインOK：${user.email}";
+                      });
+                      // チャット画面に遷移＋ログイン画面を破棄
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) {
+                          return ChatPage(user);
+                        }),
+                      );
+                    } catch (e) {
+                      // ログインに失敗した場合
+                      setState(() {
+                        infoText = "ログインNG：${e.message}";
+                      });
+                    }
+                  },
+                ),
               ),
-              Container(height: 32),
-              Text(infoText),
+              Container(
+                padding: EdgeInsets.all(8),
+                width: double.infinity,
+                // ユーザー登録ボタン
+                child: OutlineButton.icon(
+                  label: Text("ユーザー登録"),
+                  icon: Icon(Icons.add),
+                  textColor: Colors.blue,
+                  onPressed: () async {
+                    try {
+                      // メール/パスワードでユーザー登録
+                      final FirebaseAuth auth = FirebaseAuth.instance;
+                      final UserCredential result =
+                          await auth.createUserWithEmailAndPassword(
+                        email: loginUserEmail,
+                        password: loginUserPassword,
+                      );
+                      // 登録したユーザー情報
+                      final User user = result.user;
+                      setState(() {
+                        infoText = "登録OK：${user.email}";
+                      });
+                    } catch (e) {
+                      // 登録に失敗した場合
+                      setState(() {
+                        infoText = "登録NG：${e.message}";
+                      });
+                    }
+                  },
+                ),
+              ),
             ],
           ),
         ),
@@ -137,237 +150,176 @@ class _MyAuthPageState extends State<MyAuthPage> {
 }
 
 // リスト画面用Widget
-class ListPage extends StatefulWidget {
-  @override
-  _ListPage createState() => _ListPage();
-}
-class _ListPage extends State<ListPage> {
-  @override
-  Widget build(BuildContext context) {
-    // return Scaffold(
-    //   // AppBarを表示し、タイトルも設定
-    //   appBar: AppBar(
-    //     title: Text('一覧画面'),
-    //   ),
-    //   body: Center(
-    //     child: Container(
-    //       padding: EdgeInsets.all(32),
-    //       child: Column(
-    //         children: <Widget>[
-    //           DataTable(
-    //             columns: const <DataColumn>[
-    //               DataColumn(
-    //                 label: Text(
-    //                   'コレクション',
-    //                   style: TextStyle(fontStyle: FontStyle.italic),
-    //                 ),
-    //               ),
-    //               DataColumn(
-    //                 label: Text(
-    //                   'ドキュメント',
-    //                   style: TextStyle(fontStyle: FontStyle.italic),
-    //                 ),
-    //               ),
-    //               DataColumn(
-    //                 label: Text(
-    //                   'キー',
-    //                   style: TextStyle(fontStyle: FontStyle.italic),
-    //                 ),
-    //               ),
-    //               DataColumn(
-    //                 label: Text(
-    //                   '値',
-    //                   style: TextStyle(fontStyle: FontStyle.italic),
-    //                 ),
-    //               ),
-    //             ],
-    //             rows: const <DataRow>[
-    //               DataRow(
-    //                 cells: <DataCell>[
-    //                   DataCell(Text('Sarah')),
-    //                   DataCell(Text('19')),
-    //                   DataCell(Text('Student')),
-    //                   DataCell(Text('Student')),
-    //                 ],
-    //               ),
-    //               DataRow(
-    //                 cells: <DataCell>[
-    //                   DataCell(Text('Janine')),
-    //                   DataCell(Text('43')),
-    //                   DataCell(Text('Professor')),
-    //                   DataCell(Text('Student')),
-    //                 ],
-    //               ),
-    //               DataRow(
-    //                 cells: <DataCell>[
-    //                   DataCell(Text('William')),
-    //                   DataCell(Text('27')),
-    //                   DataCell(Text('Associate Professor')),
-    //                   DataCell(Text('Student')),
-    //                 ],
-    //               ),
-    //             ],
-    //           ),
-    //           FlatButton(
-    //             // ボタンをクリックした時の処理
-    //             onPressed: () {
-    //               // "pop"で前の画面に戻る
-    //               Navigator.of(context).pop();
-    //             },
-    //             child: Text('ログイン画面（クリックで戻る）'),
-    //           ),
-    //         ]
-    //       ),
-    //     ),
-    //   ),
-    //   floatingActionButton: FloatingActionButton(
-    //     onPressed: () {
-    //       // "push"で新規画面に遷移
-    //       Navigator.of(context).push(
-    //         MaterialPageRoute(builder: (context) {
-    //           // 遷移先の画面としてリスト追加画面を指定
-    //           return AddPage();
-    //         }),
-    //       );
-    //     },
-    //     child: Icon(Icons.add),
-    //   )
-    // );
-    CollectionReference users = FirebaseFirestore.instance.collection('users');
-    return FutureBuilder<DocumentSnapshot>(
-      future: users.doc('id_abc').get(),
-      builder:
-          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+class ChatPage extends StatelessWidget  {
+  // 引数からユーザー情報を受け取れるようにする
+  ChatPage(this.user);
 
-        if (snapshot.hasError) {
-          return Text("Something went wrong");
-        }
+  // ユーザー情報
+  final User user;
 
-        if (snapshot.connectionState == ConnectionState.done) {
-          Map<String, dynamic> data = snapshot.data.data();
-          var keys = data.keys.toList();
-          //return Text("Full Name: ${data['full_name']} ${data['last_name']}");
-          return Scaffold(
-            // AppBarを表示し、タイトルも設定
-            appBar: AppBar(
-              title: Text('一覧画面'),
-            ),
-            body: ListView.builder(
-              itemCount: data.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  child: Card(
-                    child: ListTile(
-                      title: Text(keys[index]+"="+data[keys[index]]),
-                    ),
-                  ),
-                );
-              },
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () async {
-                // "push"で新規画面に遷移
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) {
-                    // 遷移先の画面としてリスト追加画面を指定
-                    return AddPage();
-                  }),
-                );
-              },
-              child: Icon(Icons.add),
-            )
-          );
-        }
-
-        return Text("loading");
-      },
-    );
-  }
-}
-
-// リスト追加画面用Widget
-class AddPage extends StatefulWidget {
-  @override
-  _AddPage createState() => _AddPage();
-}
-class _AddPage extends State<AddPage> {
-  // 入力されたコレクション
-  String collection = "";
-  // 入力されたドキュメント
-  String document = "";
-  // 入力されたキー
-  String key = "";
-  // 入力された値
-  String value = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // AppBarを表示し、タイトルも設定
       appBar: AppBar(
-        title: Text('追加画面'),
+        title: Text('チャット'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              // ログアウト処理
+              // 内部で保持しているログイン情報等が初期化される
+              // （現時点ではログアウト時はこの処理を呼び出せばOKと、思うぐらいで大丈夫です）
+              await FirebaseAuth.instance.signOut();
+              // ログイン画面に遷移＋チャット画面を破棄
+              await Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) {
+                  return LoginPage();
+                }),
+              );
+            },
+          ),
+        ],
+      ),
+      body: Column(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.all(8),
+            child: Text('ログイン情報：${user.email}'),
+          ),
+          Expanded(
+            // StreamBuilder
+            // 非同期処理の結果を元にWidgetを作れる
+            child: StreamBuilder<QuerySnapshot>(
+              // 投稿メッセージ一覧を取得（非同期処理）
+              // 投稿日時でソート
+              stream: FirebaseFirestore.instance
+                  .collection('posts')
+                  .orderBy('date')
+                  .snapshots(),
+                  //.get(),
+              builder: (context, snapshot) {
+                // データが取得できた場合
+                if (snapshot.hasData) {
+                  final List<DocumentSnapshot> documents =
+                      snapshot.data.docs;
+                  // 取得した投稿メッセージ一覧を元にリスト表示
+                  return ListView(
+                    children: documents.map((document) {
+                      IconButton deleteIcon;
+                      // 自分の投稿メッセージの場合は削除ボタンを表示
+                      if (document['email'] == user.email) {
+                        deleteIcon = IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () async {
+                            // 投稿メッセージのドキュメントを削除
+                            await FirebaseFirestore.instance
+                                .collection('posts')
+                                .doc(document.id)
+                                .delete();
+                          },
+                        );
+                      }
+                      return Card(
+                        child: ListTile(
+                          title: Text(document['text']),
+                          subtitle: Text(document['email']),
+                          trailing: deleteIcon,
+                        ),
+                      );
+                    }).toList(),
+                  );
+                }
+                // データが読込中の場合
+                return Center(
+                  child: Text('読込中...'),
+                );
+              },
+            ),
+          ),
+        ]
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          // "push"で新規画面に遷移
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) {
+              // 遷移先の画面としてリスト追加画面を指定
+              return AddPostPage(user);
+            }),
+          );
+        },
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+// リスト追加画面用Widget
+class AddPostPage extends StatefulWidget {
+  // 引数からユーザー情報を受け取る
+  AddPostPage(this.user);
+  // ユーザー情報
+  final User user;
+
+  @override
+  _AddPostPageState createState() => _AddPostPageState();
+}
+class _AddPostPageState extends State<AddPostPage> {
+  // 入力した投稿メッセージ
+  String messageText = '';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // AppBarを表示し、タイトルも設定
+      appBar: AppBar(
+        title: Text('チャット投稿'),
       ),
       body: Center(
         child: Container(
           padding: EdgeInsets.all(32),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              // 投稿メッセージ入力
               TextFormField(
-                // テキスト入力のラベルを設定
-                decoration: InputDecoration(labelText: "コレクション"),
+                decoration: InputDecoration(labelText: '投稿メッセージ'),
+                // 複数行のテキスト入力
+                keyboardType: TextInputType.multiline,
+                // 最大3行
+                maxLines: 3,
                 onChanged: (String value) {
                   setState(() {
-                    collection = value;
+                    messageText = value;
                   });
                 },
               ),
-              TextFormField(
-                // テキスト入力のラベルを設定
-                decoration: InputDecoration(labelText: "ドキュメント"),
-                onChanged: (String value) {
-                  setState(() {
-                    document = value;
-                  });
-                },
-              ),
-              TextFormField(
-                // テキスト入力のラベルを設定
-                decoration: InputDecoration(labelText: "キー"),
-                onChanged: (String value) {
-                  setState(() {
-                    key = value;
-                  });
-                },
-              ),
-              TextFormField(
-                // テキスト入力のラベルを設定
-                decoration: InputDecoration(labelText: "値"),
-                onChanged: (String value) {
-                  setState(() {
-                    this.value = value;
-                  });
-                },
-              ),
-              RaisedButton(
-                child: Text('データ作成'),
-                onPressed: () async {
-                  // ドキュメント作成
-                  await FirebaseFirestore.instance
-                      .collection(collection) // コレクションID
-                      .doc(document) // ドキュメントID
-                      .set({key: value}); // データ
-                      //.delete();
-                  // "pop"で前の画面に戻る
-                  Navigator.of(context).pop();
-                },
-              ),
-              FlatButton(
-                // ボタンをクリックした時の処理
-                onPressed: () {
-                  // "pop"で前の画面に戻る
-                  Navigator.of(context).pop();
-                },
-                child: Text('一覧画面（クリックで戻る）'),
-              ),
+              Container(
+                padding: EdgeInsets.all(8),
+                width: double.infinity,
+                child: RaisedButton(
+                  color: Colors.blue,
+                  textColor: Colors.white,
+                  child: Text('投稿'),
+                  onPressed: () async {
+                    final date =
+                        DateTime.now().toLocal().toIso8601String(); // 現在の日時
+                    final email = widget.user.email; // AddPostPage のデータを参照
+                    // 投稿メッセージ用ドキュメント作成
+                    await FirebaseFirestore.instance
+                        .collection('posts') // コレクションID指定
+                        .doc() // ドキュメントID自動生成
+                        .set({
+                          'text': messageText,
+                          'email': email,
+                          'date': date
+                        });
+                    // 1つ前の画面に戻る
+                    Navigator.of(context).pop();
+                  },
+                ),
+              )
             ]
           ),
         ),
