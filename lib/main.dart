@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'footer.dart'; 
 
 void main() {
   runApp(ChatApp());
@@ -40,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       // AppBarを表示し、タイトルも設定
       appBar: AppBar(
-        title: Text('ログイン画面'),
+        title: Text('チャット投稿アプリ'),
       ),
       body: Center(
         child: Container(
@@ -48,24 +49,30 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              TextFormField(
-                // テキスト入力のラベルを設定
-                decoration: InputDecoration(labelText: "メールアドレス"),
-                onChanged: (String value) {
-                  setState(() {
-                    loginUserEmail = value;
-                  });
-                },
+              Container(
+                constraints: BoxConstraints(minWidth: 400, maxWidth: 800),
+                child: TextFormField(
+                  // テキスト入力のラベルを設定
+                  decoration: InputDecoration(labelText: "メールアドレス"),
+                  onChanged: (String value) {
+                    setState(() {
+                      loginUserEmail = value;
+                    });
+                  },
+                ),
               ),
-              TextFormField(
-                decoration: InputDecoration(labelText: "パスワード（６文字以上）"),
-                // パスワードが見えないようにする
-                obscureText: true,
-                onChanged: (String value) {
-                  setState(() {
-                    loginUserPassword = value;
-                  });
-                },
+              Container(
+                constraints: BoxConstraints(minWidth: 400, maxWidth: 800),
+                child: TextFormField(
+                  decoration: InputDecoration(labelText: "パスワード（６文字以上）"),
+                  // パスワードが見えないようにする
+                  obscureText: true,
+                  onChanged: (String value) {
+                    setState(() {
+                      loginUserPassword = value;
+                    });
+                  },
+                ),
               ),
               Container(
                 padding: EdgeInsets.all(8),
@@ -73,7 +80,9 @@ class _LoginPageState extends State<LoginPage> {
                 child: Text(infoText),
               ),
               Container(
-                padding: EdgeInsets.all(8),
+                padding: EdgeInsets.all(5),
+                height: 50,
+                constraints: BoxConstraints(minWidth: 100, maxWidth: 200),
                 width: double.infinity,
                 // ログイン登録ボタン
                 child: RaisedButton.icon(
@@ -111,7 +120,9 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               Container(
-                padding: EdgeInsets.all(8),
+                padding: EdgeInsets.all(5),
+                height: 50,
+                constraints: BoxConstraints(minWidth: 100, maxWidth: 200),
                 width: double.infinity,
                 // ユーザー登録ボタン
                 child: OutlineButton.icon(
@@ -249,8 +260,10 @@ class ChatPage extends StatelessWidget  {
             }),
           );
         },
+        tooltip: "チャットを投稿",
         child: Icon(Icons.add),
       ),
+      bottomNavigationBar: Footer(),  // Footerを追加
     );
   }
 }
