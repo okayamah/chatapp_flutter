@@ -321,8 +321,13 @@ class _AddPostPageState extends State<AddPostPage> {
               ),
               Container(
                 padding: EdgeInsets.all(8),
-                width: double.infinity,
+                height: 50,
+                constraints: BoxConstraints(minWidth: 150, maxWidth: 300),
                 child: RaisedButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                    side: BorderSide(color: Colors.blue)
+                  ),
                   color: Colors.blue,
                   textColor: Colors.white,
                   child: Text('投稿'),
