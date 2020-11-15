@@ -81,13 +81,18 @@ class _LoginPageState extends State<LoginPage> {
               ),
               Container(
                 padding: EdgeInsets.all(5),
-                height: 70,
+                height: 50,
                 constraints: BoxConstraints(minWidth: 150, maxWidth: 300),
                 width: double.infinity,
                 // ログイン登録ボタン
-                child: RaisedButton.icon(
-                  label: Text("ログイン"),
-                  icon: Icon(Icons.login),
+                child: RaisedButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                    side: BorderSide(color: Colors.blue)
+                  ),
+                  child: const Text('ログイン'),
+                  // label: Text("ログイン"),
+                  // icon: Icon(Icons.login),
                   color: Colors.blue,
                   textColor: Colors.white,
                   onPressed: () async {
@@ -121,13 +126,18 @@ class _LoginPageState extends State<LoginPage> {
               ),
               Container(
                 padding: EdgeInsets.all(5),
-                height: 70,
+                height: 50,
                 constraints: BoxConstraints(minWidth: 150, maxWidth: 300),
                 width: double.infinity,
                 // ユーザー登録ボタン
-                child: OutlineButton.icon(
-                  label: Text("ユーザー登録"),
-                  icon: Icon(Icons.add),
+                child: FlatButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                    side: BorderSide(color: Colors.blue)
+                  ),
+                  child: const Text('ユーザー登録'),
+                  // label: Text("ユーザー登録"),
+                  // icon: Icon(Icons.add),
                   textColor: Colors.blue,
                   onPressed: () async {
                     try {
@@ -250,7 +260,7 @@ class ChatPage extends StatelessWidget  {
           ),
         ]
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           // "push"で新規画面に遷移
           Navigator.of(context).push(
@@ -260,8 +270,9 @@ class ChatPage extends StatelessWidget  {
             }),
           );
         },
+        label: Text("投稿"),
         tooltip: "チャットを投稿",
-        child: Icon(Icons.add),
+        icon: Icon(Icons.add),
       ),
       bottomNavigationBar: Footer(),  // Footerを追加
     );
