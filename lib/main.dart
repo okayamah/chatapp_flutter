@@ -81,8 +81,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
               Container(
                 padding: EdgeInsets.all(5),
-                height: 50,
-                constraints: BoxConstraints(minWidth: 100, maxWidth: 200),
+                height: 70,
+                constraints: BoxConstraints(minWidth: 150, maxWidth: 300),
                 width: double.infinity,
                 // ログイン登録ボタン
                 child: RaisedButton.icon(
@@ -121,8 +121,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
               Container(
                 padding: EdgeInsets.all(5),
-                height: 50,
-                constraints: BoxConstraints(minWidth: 100, maxWidth: 200),
+                height: 70,
+                constraints: BoxConstraints(minWidth: 150, maxWidth: 300),
                 width: double.infinity,
                 // ユーザー登録ボタン
                 child: OutlineButton.icon(
